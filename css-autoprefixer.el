@@ -27,14 +27,14 @@
 (defun css-autoprefixer ()
   "Run autoprefix in the current buffer. If error, display error messages"
   (interactive)
-  (let* ((result (css-autoprefixer--execute-npx buffer-file-name))
-         (success-p (= (car result) 0))
-         (content (car (cdr result))))
-    (if success-p
-        (progn
-          (css-autoprefixer-clean-buffer)
-          (insert content))
-      (display-message-or-buffer content))))
+  (if buffer-file-name (let* ((result (css-autoprefixer--execute-npx buffer-file-name))
+                              (success-p (= (car result) 0))
+                              (content (car (cdr result))))
+                         (if success-p
+                             (progn
+                               (css-autoprefixer-clean-buffer)
+                               (insert content))
+                           (display-message-or-buffer content)))))
 
 
 (defun css-autoprefixer-clean-buffer ()
@@ -46,18 +46,18 @@
 
 (defun css-autoprefixer--execute-npx (filename)
   "Run autoprefix shell command for the given FILENAME. Return a list (EXITCODE, OUTPUT)"
-  (if filename
-      (with-temp-buffer
-        (list (call-process "npx"
-                            nil
-                            (list (current-buffer) t)
-                            0
-                            "postcss"
-                            (shell-quote-argument (expand-file-name filename))
-                            "--use"
-                            "autoprefixer"
-                            "--no-map")
-              (buffer-string)))))
+  (with-temp-buffer
+    (list (call-process "npx"
+                        nil
+                        (list (current-buffer)
+                              t)
+                        0
+                        "postcss"
+                        (shell-quote-argument (expand-file-name filename))
+                        "--use"
+                        "autoprefixer"
+                        "--no-map")
+          (buffer-string))))
 
 (provide 'css-autoprefixer)
 ;;; css-autoprefixer.el ends here
