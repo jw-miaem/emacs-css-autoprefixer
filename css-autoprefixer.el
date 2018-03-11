@@ -46,17 +46,18 @@
 
 (defun css-autoprefixer--execute-npx (filename)
   "Run autoprefix shell command for the given FILENAME. Return a list (EXITCODE, OUTPUT)"
-  (with-temp-buffer
-    (list (call-process "npx"
-                        nil
-                        (list (current-buffer) t)
-                        0
-                        "postcss"
-                        (shell-quote-argument (expand-file-name filename))
-                        "--use"
-                        "autoprefixer"
-                        "--no-map")
-          (buffer-string))))
+  (if filename
+      (with-temp-buffer
+        (list (call-process "npx"
+                            nil
+                            (list (current-buffer) t)
+                            0
+                            "postcss"
+                            (shell-quote-argument (expand-file-name filename))
+                            "--use"
+                            "autoprefixer"
+                            "--no-map")
+              (buffer-string)))))
 
 (provide 'css-autoprefixer)
 ;;; css-autoprefixer.el ends here
